@@ -86,58 +86,64 @@ const MessageItem = ({
 
           {message.isOwn && message._id === selectedConvo.lastMessage?._id && (
               <>
-              {console.log("seenBy:", JSON.stringify(selectedConvo.seenBy))}
-              {console.log("participants:", JSON.stringify(selectedConvo.participants))}
-              {selectedConvo.type === "group" ? (
-                <div className="flex items-center gap-0.5">
-                  {selectedConvo.seenBy
-                    .filter((s) => s._id !== message.senderId)
-                    .map((s) => {
-                      const participant = selectedConvo.participants.find(
-                        (p) => p._id === s._id
-                      );
-                      return (
-                        <UserAvatar
-                          key={s._id}
-                          type="chat"
-                          name={participant?.displayName ?? s.displayName ?? ""}
-                          avatarUrl={participant?.avatarUrl ?? s.avatarUrl ?? undefined}
-                          className="size-3"
-                        />
-                      );
-                    })}
-                </div>
-              ) : (
-                <div className="flex items-center gap-1">
-                  {lastMessageStatus === "seen" ? (
-                    selectedConvo.seenBy
-                      .filter((s) => s._id !== message.senderId)
+                {selectedConvo.type === "group" ? (
+                  <div className="flex items-center gap-0.5">
+                    {selectedConvo.seenBy
+                      .filter((s) => {
+                        const id = typeof s === "string" ? s : s._id;
+                        return id !== message.senderId;
+                      })
                       .map((s) => {
+                        const id = typeof s === "string" ? s : s._id;
                         const participant = selectedConvo.participants.find(
-                          (p) => p._id === s._id
+                          (p) => p._id === id
                         );
                         return (
                           <UserAvatar
-                            key={s._id}
+                            key={id}
                             type="chat"
-                            name={participant?.displayName ?? s.displayName ?? ""}
-                            avatarUrl={participant?.avatarUrl ?? s.avatarUrl ?? undefined}
+                            name={participant?.displayName ?? ""}
+                            avatarUrl={participant?.avatarUrl ?? undefined}
                             className="size-3"
                           />
                         );
-                      })
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="text-xs px-1.5 py-0.5 h-4 border-0 bg-muted text-muted-foreground"
-                    >
-                      delivered
-                    </Badge>
-                  )}
-                </div>
-              )}
-            </>
-          )}
+                      })}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    {lastMessageStatus === "seen" ? (
+                      selectedConvo.seenBy
+                        .filter((s) => {
+                          const id = typeof s === "string" ? s : s._id;
+                          return id !== message.senderId;
+                        })
+                        .map((s) => {
+                          const id = typeof s === "string" ? s : s._id;
+                          const participant = selectedConvo.participants.find(
+                            (p) => p._id === id
+                          );
+                          return (
+                            <UserAvatar
+                              key={id}
+                              type="chat"
+                              name={participant?.displayName ?? ""}
+                              avatarUrl={participant?.avatarUrl ?? undefined}
+                              className="size-3"
+                            />
+                          );
+                        })
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-xs px-1.5 py-0.5 h-4 border-0 bg-muted text-muted-foreground"
+                      >
+                        delivered
+                      </Badge>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
         </div>
       </div>
     </>
