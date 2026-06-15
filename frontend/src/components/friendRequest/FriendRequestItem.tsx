@@ -13,6 +13,7 @@ const FriendRequestItem = ({ requestInfo, actions, type }: RequestItemProps) => 
     return;
   }
   const info = type === "sent" ? requestInfo.to : requestInfo.from;
+  console.log("info:", info);
 
   if (!info) {
     return;
@@ -24,6 +25,7 @@ const FriendRequestItem = ({ requestInfo, actions, type }: RequestItemProps) => 
         <UserAvatar
           type="sidebar"
           name={info.displayName}
+          avatarUrl={info.avatarUrl} 
         />
         <div>
           <p className="font-medium">{info.displayName}</p>
