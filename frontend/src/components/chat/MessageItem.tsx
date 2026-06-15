@@ -85,7 +85,9 @@ const MessageItem = ({
           </Card>
 
           {message.isOwn && message._id === selectedConvo.lastMessage?._id && (
-  <>
+              <>
+              {console.log("seenBy:", JSON.stringify(selectedConvo.seenBy))}
+              {console.log("participants:", JSON.stringify(selectedConvo.participants))}
               {selectedConvo.type === "group" ? (
                 <div className="flex items-center gap-0.5">
                   {selectedConvo.seenBy
