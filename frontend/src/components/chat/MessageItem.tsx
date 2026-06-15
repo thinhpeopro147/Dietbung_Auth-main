@@ -86,40 +86,44 @@ const MessageItem = ({
 
           {message.isOwn && message._id === selectedConvo.lastMessage?._id && (
   <>
-          {selectedConvo.type === "group" ? (
-            <div className="flex items-center gap-0.5">
-              {selectedConvo.seenBy
-                .filter((s) => s._id !== message.senderId)
-                .map((s) => {
-                  // Tìm participant để lấy avatar mới nhất
-                  const participant = selectedConvo.participants.find(
-                    (p) => p._id === s._id
-                  );
-                  return (
-                    <UserAvatar
-                      key={s._id}
-                      type="chat"
-                      name={participant?.displayName ?? s.displayName ?? ""}
-                      avatarUrl={participant?.avatarUrl ?? s.avatarUrl ?? undefined}
-                      className="size-4"
-                    />
-                  );
-                })}
+              {selectedConvo.type === "group" ? (
+                <div className="flex items-center gap-0.5">
+                  {selectedConvo.seenBy
+                    .filter((s) => s._id !== message.senderId)
+                    .map((s) => {
+                      const participant = selectedConvo.participants.find(
+                        (p) => p._id === s._id
+                      );
+                      return (
+                        <UserAvatar
+                          key={s._id}
+                          type="chat"
+                          name={participant?.displayName ?? s.displayName ?? ""}
+                          avatarUrl={participant?.avatarUrl ?? s.avatarUrl ?? undefined}
+                          className="size-3"
+                        />
+                      );
+                    })}
                 </div>
               ) : (
                 <div className="flex items-center gap-1">
                   {lastMessageStatus === "seen" ? (
                     selectedConvo.seenBy
                       .filter((s) => s._id !== message.senderId)
-                      .map((s) => (
-                        <UserAvatar
-                          key={s._id}
-                          type="chat"
-                          name={s.displayName ?? ""}
-                          avatarUrl={s.avatarUrl ?? undefined}
-                          className="size-4"
-                        />
-                      ))
+                      .map((s) => {
+                        const participant = selectedConvo.participants.find(
+                          (p) => p._id === s._id
+                        );
+                        return (
+                          <UserAvatar
+                            key={s._id}
+                            type="chat"
+                            name={participant?.displayName ?? s.displayName ?? ""}
+                            avatarUrl={participant?.avatarUrl ?? s.avatarUrl ?? undefined}
+                            className="size-3"
+                          />
+                        );
+                      })
                   ) : (
                     <Badge
                       variant="outline"
