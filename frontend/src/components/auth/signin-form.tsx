@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "../ui/label";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
+import { Link } from "react-router";
 
 const signInSchema = z.object({
   username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 ký tự"),
@@ -47,15 +48,9 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
             <div className="flex flex-col gap-6">
               {/* header - logo */}
               <div className="flex flex-col items-center text-center gap-2">
-                <a
-                  href="/"
-                  className="mx-auto block w-fit text-center"
-                >
-                  <img
-                    src="/logo.svg"
-                    alt="logo"
-                  />
-                </a>
+                <Link to="/" className="mx-auto block w-fit text-center">
+                  <img src="/logo.svg" alt="logo" />
+                </Link>
 
                 <h1 className="text-2xl font-bold">Chào mừng quay lại</h1>
                 <p className="text-muted-foreground text-balance">
@@ -115,12 +110,9 @@ export function SigninForm({ className, ...props }: React.ComponentProps<"div">)
 
               <div className="text-center text-sm">
                 Chưa có tài khoản?{" "}
-                <a
-                  href="/signup"
-                  className="underline underline-offset-4"
-                >
-                  Đăng ký
-                </a>
+                <Link to="/signup" className="underline underline-offset-4">
+                   Đăng ký
+                </Link>
               </div>
             </div>
           </form>
