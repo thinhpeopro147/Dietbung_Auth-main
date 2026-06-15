@@ -8,13 +8,13 @@ import { io } from "../socket/index.js";
 
 export const sendDirectMessage = async (req, res) => {
   try {
-    const { recipientId, content, conversationId } = req.body;
+    const { recipientId, content, conversationId, imgUrl } = req.body;
     const senderId = req.user._id;
 
     let conversation;
 
-    if (!content) {
-      return res.status(400).json({ message: "Thiếu nội dung" });
+    if (!content && !imgUrl) {
+      return res.status(400).json({ message: "Thiếu nội dung hoặc ảnh" });
     }
 
     if (conversationId) {
@@ -33,10 +33,11 @@ export const sendDirectMessage = async (req, res) => {
       });
     }
 
-    const message = await Message.create({
+     const message = await Message.create({
       conversationId: conversation._id,
       senderId,
       content,
+      imgUrl, 
     });
 
     updateConversationAfterCreateMessage(conversation, message, senderId);
@@ -54,11 +55,11 @@ export const sendDirectMessage = async (req, res) => {
 
 export const sendGroupMessage = async (req, res) => {
   try {
-    const { conversationId, content } = req.body;
+    const { conversationId, content, imgUrl } = req.body;
     const senderId = req.user._id;
     const conversation = req.conversation;
 
-    if (!content) {
+    if (!content && !imgUrl) {
       return res.status(400).json("Thiếu nội dung");
     }
 
@@ -66,6 +67,7 @@ export const sendGroupMessage = async (req, res) => {
       conversationId,
       senderId,
       content,
+      imgUrl,
     });
 
     updateConversationAfterCreateMessage(conversation, message, senderId);

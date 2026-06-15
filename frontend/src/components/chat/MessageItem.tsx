@@ -25,7 +25,7 @@ const MessageItem = ({
     index === 0 ||
     new Date(message.createdAt).getTime() -
       new Date(prev?.createdAt || 0).getTime() >
-      300000; // 5 phút
+      300000;
 
   const isGroupBreak = isShowTime || message.senderId !== prev?.senderId;
 
@@ -35,7 +35,6 @@ const MessageItem = ({
 
   return (
     <>
-      {/* time */}
       {isShowTime && (
         <span className="flex justify-center text-xs text-muted-foreground px-1">
           {formatMessageTime(new Date(message.createdAt))}
@@ -48,7 +47,6 @@ const MessageItem = ({
           message.isOwn ? "justify-end" : "justify-start"
         )}
       >
-        {/* avatar */}
         {!message.isOwn && (
           <div className="w-8">
             {isGroupBreak && (
@@ -61,7 +59,6 @@ const MessageItem = ({
           </div>
         )}
 
-        {/* tin nhắn */}
         <div
           className={cn(
             "max-w-xs lg:max-w-md space-y-1 flex flex-col",
@@ -74,22 +71,60 @@ const MessageItem = ({
               message.isOwn ? "chat-bubble-sent border-0" : "chat-bubble-received"
             )}
           >
-            <p className="text-sm leading-relaxed break-words">{message.content}</p>
+            {message.imgUrl && (
+              <img
+                src={message.imgUrl}
+                alt="image"
+                className="max-w-xs rounded-lg mb-2 cursor-pointer"
+                onClick={() => window.open(message.imgUrl!, "_blank")}
+              />
+            )}
+            {message.content && (
+              <p className="text-sm leading-relaxed break-words">{message.content}</p>
+            )}
           </Card>
 
-          {/* seen/ delivered */}
           {message.isOwn && message._id === selectedConvo.lastMessage?._id && (
-            <Badge
-              variant="outline"
-              className={cn(
-                "text-xs px-1.5 py-0.5 h-4 border-0",
-                lastMessageStatus === "seen"
-                  ? "bg-primary/20 text-primary"
-                  : "bg-muted text-muted-foreground"
+            <>
+              {selectedConvo.type === "group" ? (
+                <div className="flex items-center gap-0.5">
+                  {selectedConvo.seenBy
+                    .filter((s) => s._id !== message.senderId)
+                    .map((s) => (
+                      <UserAvatar
+                        key={s._id}
+                        type="chat"
+                        name={s.displayName ?? ""}
+                        avatarUrl={s.avatarUrl ?? undefined}
+                        className="size-4"
+                      />
+                    ))}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1">
+                  {lastMessageStatus === "seen" ? (
+                    selectedConvo.seenBy
+                      .filter((s) => s._id !== message.senderId)
+                      .map((s) => (
+                        <UserAvatar
+                          key={s._id}
+                          type="chat"
+                          name={s.displayName ?? ""}
+                          avatarUrl={s.avatarUrl ?? undefined}
+                          className="size-4"
+                        />
+                      ))
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="text-xs px-1.5 py-0.5 h-4 border-0 bg-muted text-muted-foreground"
+                    >
+                      delivered
+                    </Badge>
+                  )}
+                </div>
               )}
-            >
-              {lastMessageStatus}
-            </Badge>
+            </>
           )}
         </div>
       </div>
@@ -97,4 +132,4 @@ const MessageItem = ({
   );
 };
 
-export default MessageItem;
+export default MessageItem; 
