@@ -106,7 +106,7 @@ const MessageItem = ({
                             type="chat"
                             name={participant?.displayName ?? ""}
                             avatarUrl={participant?.avatarUrl ?? undefined}
-                            className="size-1"
+                            className="size-0.5"
                           />
                         );
                       })}
@@ -130,7 +130,7 @@ const MessageItem = ({
                               type="chat"
                               name={participant?.displayName ?? ""}
                               avatarUrl={participant?.avatarUrl ?? undefined}
-                              className="size-1"
+                              className="size-0.5"
                             />
                           );
                         })
