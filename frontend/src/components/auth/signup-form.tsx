@@ -136,7 +136,7 @@ export function SignupForm({ className, ...props }: React.ComponentProps<"div">)
                 <Input
                   type="email"
                   id="email"
-                  placeholder="m@gmail.com"
+                  placeholder="@gmail.com"
                   {...register("email")}
                 />
                 {errors.email && (
