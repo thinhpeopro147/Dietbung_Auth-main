@@ -1,6 +1,13 @@
 import { Card } from "@/components/ui/card";
+import React from "react";
 import { formatOnlineTime, cn } from "@/lib/utils";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ChatCardProps {
   convoId: string;
@@ -11,6 +18,7 @@ interface ChatCardProps {
   unreadCount?: number;
   leftSection: React.ReactNode;
   subtitle: React.ReactNode;
+  onDelete?: (id: string) => void;
 }
 
 const ChatCard = ({
@@ -22,12 +30,13 @@ const ChatCard = ({
   unreadCount,
   leftSection,
   subtitle,
+  onDelete,
 }: ChatCardProps) => {
   return (
     <Card
       key={convoId}
       className={cn(
-        "border-none p-3 cursor-pointer transition-smooth glass hover:bg-muted/30",
+        "group border-none p-3 cursor-pointer transition-smooth glass hover:bg-muted/30",
         isActive &&
           "ring-2 ring-primary/50 bg-gradient-to-tr from-primary-glow/10 to-primary-foreground"
       )}
@@ -54,7 +63,27 @@ const ChatCard = ({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1 flex-1 min-w-0">{subtitle}</div>
-            <MoreHorizontal className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100 hover:size-5 transition-smooth" />
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                onClick={(e) => e.stopPropagation()}
+                className="opacity-0 group-hover:opacity-100 transition-smooth"
+              >
+                <MoreHorizontal className="size-4 text-muted-foreground" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-destructive cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.(convoId);
+                  }}
+                >
+                  <Trash2 className="size-4 mr-2" />
+                  Xóa cuộc trò chuyện
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

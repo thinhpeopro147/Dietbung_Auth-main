@@ -10,7 +10,7 @@ import { useSocketStore } from "@/stores/useSocketStore";
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
   const { user } = useAuthStore();
-  const { activeConversationId, setActiveConversation, messages, fetchMessages } =
+  const { activeConversationId, setActiveConversation, messages, fetchMessages, deleteConversation } =
     useChatStore();
   const { onlineUsers } = useSocketStore();
 
@@ -19,14 +19,18 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
   const otherUser = convo.participants.find((p) => p._id !== user._id);
   if (!otherUser) return null;
 
-  const unreadCount = convo.unreadCounts[user._id];
+  const unreadCount = convo.unreadCounts?.[user._id] ?? 0;
   const lastMessage = convo.lastMessage?.content ?? "";
 
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
     if (!messages[id]) {
-      await fetchMessages();
+      await fetchMessages(id);
     }
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteConversation(id);
   };
 
   return (
@@ -41,25 +45,26 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
       isActive={activeConversationId === convo._id}
       onSelect={handleSelectConversation}
       unreadCount={unreadCount}
+      onDelete={handleDelete}
       leftSection={
-  <div className="relative">
-    <UserAvatar
-      type="sidebar"
-      name={otherUser.displayName ?? ""}
-      avatarUrl={otherUser.avatarUrl ?? undefined}
-    />
-    <StatusBadge
-      status={
-        onlineUsers.includes(otherUser?._id ?? "") ? "online" : "offline"
+        <div className="relative">
+          <UserAvatar
+            type="sidebar"
+            name={otherUser.displayName ?? ""}
+            avatarUrl={otherUser.avatarUrl ?? undefined}
+          />
+          <StatusBadge
+            status={
+              onlineUsers.includes(otherUser?._id ?? "") ? "online" : "offline"
+            }
+          />
+          {unreadCount > 0 && (
+            <div className="absolute -top-1 -right-1 z-20">
+              <UnreadCountBadge unreadCount={unreadCount} />
+            </div>
+          )}
+        </div>
       }
-    />
-    {unreadCount > 0 && (
-      <div className="absolute -top-1 -right-1 z-20">
-        <UnreadCountBadge unreadCount={unreadCount} />
-      </div>
-    )}
-  </div>
-}
       subtitle={
         <p
           className={cn(
