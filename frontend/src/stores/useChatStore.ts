@@ -210,6 +210,20 @@ export const useChatStore = create<ChatState>()(
           };
         });
       },
+
+      deleteConversation: async (conversationId: string) => {
+      try {
+        await chatService.deleteConversation(conversationId);
+        set((state) => ({
+          conversations: state.conversations.filter((c) => c._id !== conversationId),
+          activeConversationId:
+            state.activeConversationId === conversationId ? null : state.activeConversationId,
+        }));
+      } catch (error) {
+        console.error("Lỗi khi xóa conversation", error);
+      }
+    },
+    
       createConversation: async (type, name, memberIds) => {
         try {
           set({ loading: true });
