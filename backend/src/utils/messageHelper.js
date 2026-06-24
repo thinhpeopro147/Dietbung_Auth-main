@@ -23,8 +23,7 @@ export const updateConversationAfterCreateMessage = (
 };
 
 export const emitNewMessage = (io, conversation, message) => {
-  console.log("emit new-message to room:", conversation._id.toString());
-  io.to(conversation._id.toString()).emit("new-message", {
+  const payload = {
     message,
     conversation: {
       _id: conversation._id,
@@ -32,5 +31,20 @@ export const emitNewMessage = (io, conversation, message) => {
       lastMessageAt: conversation.lastMessageAt,
     },
     unreadCounts: conversation.unreadCounts,
-  });
+  };
+
+  // Emit vào cả room của conversation lẫn room cá nhân (userId) của từng
+  // participant. Room cá nhân luôn được join sẵn lúc connect socket, nên
+  // đảm bảo người nhận luôn có tin nhắn realtime kể cả khi họ chưa kịp
+  // join room conversation (VD: conversation vừa được tạo lại do cuộc
+  // trò chuyện cũ bị xoá). io.to() nhận nhiều room và tự loại trùng
+  // socket nên không lo bị nhận 2 lần.
+  const rooms = [
+    conversation._id.toString(),
+    ...conversation.participants.map((p) =>
+      (p.userId?._id ?? p.userId).toString()
+    ),
+  ];
+
+  io.to(rooms).emit("new-message", payload);
 };

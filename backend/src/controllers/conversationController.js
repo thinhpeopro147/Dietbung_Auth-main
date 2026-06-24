@@ -1,6 +1,7 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 import { io } from "../socket/index.js";
+import { getDirectKey } from "../utils/conversationHelper.js";
 
 export const createConversation = async (req, res) => {
   try {
@@ -23,20 +24,30 @@ export const createConversation = async (req, res) => {
 
     if (type === "direct") {
       const participantId = memberIds[0];
+      const directKey = getDirectKey(userId, participantId);
 
-      conversation = await Conversation.findOne({
-        type: "direct",
-        "participants.userId": { $all: [userId, participantId] },
-      });
+      conversation = await Conversation.findOne({ type: "direct", directKey });
 
       if (!conversation) {
-        conversation = new Conversation({
-          type: "direct",
-          participants: [{ userId }, { userId: participantId }],
-          lastMessageAt: new Date(),
-        });
+        try {
+          conversation = new Conversation({
+            type: "direct",
+            directKey,
+            participants: [{ userId }, { userId: participantId }],
+            lastMessageAt: new Date(),
+          });
 
-        await conversation.save();
+          await conversation.save();
+        } catch (err) {
+          // Có request khác vừa tạo xong trong lúc mình đang tạo (race
+          // condition) -> bị unique index chặn (mã lỗi 11000). Lấy lại
+          // conversation đã được tạo đó để dùng, không throw lỗi ra ngoài.
+          if (err?.code === 11000) {
+            conversation = await Conversation.findOne({ type: "direct", directKey });
+          } else {
+            throw err;
+          }
+        }
       }
     }
 
@@ -113,8 +124,20 @@ export const deleteConversation = async (req, res) => {
       return res.status(403).json({ message: "Bạn không có quyền xóa cuộc trò chuyện này" });
     }
 
+    const participantIds = conversation.participants.map((p) =>
+      p.userId.toString()
+    );
+
     await Conversation.findByIdAndDelete(conversationId);
     await Message.deleteMany({ conversationId });
+
+    // Báo cho tất cả thành viên (kể cả người không bấm xóa) để FE xóa
+    // conversation khỏi danh sách ngay, không cần load lại trang.
+    // Emit vào room cá nhân (userId) vì room conversation có thể không
+    // còn ai join (giống lý do real-time message bị miss trước đây).
+    participantIds.forEach((id) => {
+      io.to(id).emit("conversation-deleted", { conversationId });
+    });
 
     return res.status(200).json({ message: "Xóa cuộc trò chuyện thành công" });
   } catch (error) {
