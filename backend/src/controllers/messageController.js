@@ -5,7 +5,7 @@ import {
   updateConversationAfterCreateMessage,
 } from "../utils/messageHelper.js";
 import { io } from "../socket/index.js";
-import { getDirectKey } from "../utils/Conversationhelper.js";
+import { getDirectKey } from "../utils/conversationHelper.js";
 
 export const sendDirectMessage = async (req, res) => {
   try {

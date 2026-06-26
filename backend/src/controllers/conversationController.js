@@ -1,7 +1,7 @@
 import Conversation from "../models/Conversation.js";
 import Message from "../models/Message.js";
 import { io } from "../socket/index.js";
-import { getDirectKey } from "../utils/Conversationhelper.js";
+import { getDirectKey } from "../utils/conversationHelper.js";
 
 export const createConversation = async (req, res) => {
   try {
