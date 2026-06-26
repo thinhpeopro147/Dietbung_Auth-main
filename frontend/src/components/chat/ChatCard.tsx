@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/card";
-import React from "react";
 import { formatOnlineTime, cn } from "@/lib/utils";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import {
