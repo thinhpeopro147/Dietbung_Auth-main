@@ -214,16 +214,22 @@ export const useChatStore = create<ChatState>()(
       deleteConversation: async (conversationId: string) => {
       try {
         await chatService.deleteConversation(conversationId);
+        get().removeConversation(conversationId);
+      } catch (error) {
+        console.error("Lỗi khi xóa conversation", error);
+      }
+    },
+
+      // Chỉ cập nhật state local, dùng khi nhận event "conversation-deleted"
+      // qua socket (do người còn lại trong cuộc trò chuyện xóa)
+      removeConversation: (conversationId: string) => {
         set((state) => ({
           conversations: state.conversations.filter((c) => c._id !== conversationId),
           activeConversationId:
             state.activeConversationId === conversationId ? null : state.activeConversationId,
         }));
-      } catch (error) {
-        console.error("Lỗi khi xóa conversation", error);
-      }
-    },
-    
+      },
+
       createConversation: async (type, name, memberIds) => {
         try {
           set({ loading: true });
