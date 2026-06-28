@@ -74,13 +74,19 @@ export const useSocketStore = create<SocketState>((set, get) => ({
 
     // new group chat
     socket.on("new-group", (conversation) => {
+      // Filter out null participants
+      if (conversation.participants) {
+      conversation.participants = conversation.participants.filter(
+      (p: any) => p && p._id && p.displayName
+    );
+  }
       useChatStore.getState().addConvo(conversation);
       socket.emit("join-conversation", conversation._id);
     });
 
     socket.on("conversation-deleted", ({ conversationId }) => {
-      useChatStore.getState().removeConversation(conversationId);
-    });
+  useChatStore.getState().removeConversation(conversationId);
+  });
   },
   disconnectSocket: () => {
     const socket = get().socket;

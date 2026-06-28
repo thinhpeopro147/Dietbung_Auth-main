@@ -150,9 +150,15 @@ export const getAllFriends = async (req, res) => {
       return res.status(200).json({ friends: [] });
     }
 
-    const friends = friendships.map((f) =>
-      f.userA._id.toString() === userId.toString() ? f.userB : f.userA
-    );
+    const friends = friendships
+      .map((f) =>
+        f.userA && f.userA._id.toString() === userId.toString() ? f.userB : f.userA
+      )
+      // Lọc bỏ friend bị null: xảy ra khi tài khoản đầu kia đã bị xoá khỏi
+      // DB nhưng quan hệ Friend (và 1 chiều userA/userB) vẫn còn sót lại
+      // (orphaned). Không lọc thì FE crash khi map qua list (đọc
+      // displayName/avatarUrl trên null).
+      .filter(Boolean);
 
     return res.status(200).json({ friends });
   } catch (error) {
