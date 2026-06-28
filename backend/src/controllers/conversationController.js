@@ -39,7 +39,9 @@ export const createConversation = async (req, res) => {
 
           await conversation.save();
         } catch (err) {
-        
+          // Có request khác vừa tạo xong trong lúc mình đang tạo (race
+          // condition) -> bị unique index chặn (mã lỗi 11000). Lấy lại
+          // conversation đã được tạo đó để dùng, không throw lỗi ra ngoài.
           if (err?.code === 11000) {
             conversation = await Conversation.findOne({ type: "direct", directKey });
           } else {

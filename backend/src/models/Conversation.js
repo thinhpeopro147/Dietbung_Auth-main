@@ -61,6 +61,10 @@ const conversationSchema = new mongoose.Schema(
       enum: ["direct", "group"],
       required: true,
     },
+    directKey: {
+      type: String,
+      default: null,
+    },
     participants: {
       type: [participantSchema],
       required: true,
@@ -93,9 +97,22 @@ const conversationSchema = new mongoose.Schema(
 );
 
 conversationSchema.index({
-  "participant.userId": 1,
+  "participants.userId": 1,
   lastMessageAt: -1,
 });
 
+conversationSchema.index(
+  { directKey: 1 },
+  { unique: true, sparse: true }
+);
+
 const Conversation = mongoose.model("Conversation", conversationSchema);
+Conversation.on("index", (err) => {
+  if (err) {
+    console.error("[Conversation] Lỗi khi tạo index:", err);
+  } else {
+    console.log("[Conversation] Tạo index thành công (gồm unique directKey)");
+  }
+});
+
 export default Conversation;

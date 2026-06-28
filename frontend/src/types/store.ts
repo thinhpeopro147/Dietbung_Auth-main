@@ -70,6 +70,9 @@ export interface ChatState {
     memberIds: string[]
   ) => Promise<void>;
   deleteConversation: (conversationId: string) => Promise<void>;
+  // chỉ xóa conversation khỏi state local (dùng khi nhận socket event
+  // từ phía người khác, không gọi lại API xóa)
+  removeConversation: (conversationId: string) => void;
 }
 
 export interface SocketState {

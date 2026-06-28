@@ -229,7 +229,7 @@ export const useChatStore = create<ChatState>()(
             state.activeConversationId === conversationId ? null : state.activeConversationId,
         }));
       },
-
+    
       createConversation: async (type, name, memberIds) => {
         try {
           set({ loading: true });

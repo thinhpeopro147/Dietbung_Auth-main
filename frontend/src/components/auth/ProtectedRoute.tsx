@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useChatStore } from "@/stores/useChatStore";
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router";
 
@@ -7,7 +8,7 @@ const ProtectedRoute = () => {
   const [starting, setStarting] = useState(true);
 
   const init = async () => {
-    // có thể xảy ra khi refresh trang
+    
     if (!accessToken) {
       await refresh();
     }
@@ -15,6 +16,8 @@ const ProtectedRoute = () => {
     if (accessToken && !user) {
       await fetchMe();
     }
+
+    useChatStore.getState().fetchConversations();
 
     setStarting(false);
   };
