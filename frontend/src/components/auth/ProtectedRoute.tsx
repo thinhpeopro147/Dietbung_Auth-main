@@ -16,9 +16,14 @@ const ProtectedRoute = () => {
     if (accessToken && !user) {
       await fetchMe();
     }
+    const currentToken = useAuthStore.getState().accessToken;
 
-    useChatStore.getState().fetchConversations();
-
+    if (currentToken && !useAuthStore.getState().user) {
+      await fetchMe();
+    }
+    if (currentToken) {
+      useChatStore.getState().fetchConversations();
+    }
     setStarting(false);
   };
 
